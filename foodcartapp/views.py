@@ -5,6 +5,10 @@ import json
 from .models import Product
 from .models import Order
 from .models import OrderItem
+from .models import ProductCategory
+from .models import Restaurant
+
+from rest_framework.decorators import api_view
 
 
 def banners_list_api(request):
@@ -59,9 +63,20 @@ def product_list_api(request):
     })
 
 
+def get_pic(url):
+    import requests
+    URL = 'https://raw.githubusercontent.com/devmanorg/star-burger-products/master/media/'
+    response = requests.get(URL+url)
+    if response.status_code == 200:
+        return response.content
+        print('Изображение успешно сохранено.')
+    else:
+        print('Ошибка при загрузке изображения. Статус код:', response.status_code)
+
+
+@api_view(['POST'])
 def register_order(request):
-    cart = json.loads(request.body.decode())
-    
+    cart = request.data
     order = Order.objects.create(
         name=cart['firstname'],
         surname=cart['lastname'],
@@ -80,3 +95,33 @@ def register_order(request):
             order=order
         )
     return JsonResponse(cart)
+
+
+@api_view(['POST'])
+def create_product(request):
+    from django.core.files.base import ContentFile
+    
+    products = request.data
+    for product in products:
+        category, _ = ProductCategory.objects.get_or_create(name=product['type'])
+        img = get_pic(product['img'])
+        Product.objects.get_or_create(
+            name=product['title'],
+            price=product['price'],
+            category=category,
+            description=product['description'],
+            image=ContentFile(img, name=product['img'])
+            )
+    return JsonResponse({'message': 'Продукты успешно созданы'})
+
+
+@api_view(['POST'])
+def create_restaurant(request):
+    restaurants = request.data
+    for restaurant in restaurants:
+        Restaurant.objects.get_or_create(
+            name=restaurant['title'],
+            address=restaurant['address'],
+            contact_phone=restaurant['contact_phone']
+        )
+    return JsonResponse({'message': 'Рестораны успешно созданы'})
