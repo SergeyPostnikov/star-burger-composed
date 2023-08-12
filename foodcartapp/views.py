@@ -82,19 +82,17 @@ def register_order(request):
         surname=cart['lastname'],
         contact_phone=cart['phonenumber'],
         address=cart['address']
-    )
-
+        )
     for product_info in cart['products']:
         product_id = product_info['product']
         amount = int(product_info['quantity'])
-
         product = Product.objects.get(pk=product_id)
         OrderItem.objects.create(
             product=product,
             amount=amount,
             order=order
         )
-    return JsonResponse(cart)
+    return JsonResponse({})
 
 
 @api_view(['POST'])
