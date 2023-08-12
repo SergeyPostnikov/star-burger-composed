@@ -63,10 +63,20 @@ def product_list_api(request):
     })
 
 
+def get_pic(url):
+    import requests
+    URL = 'https://raw.githubusercontent.com/devmanorg/star-burger-products/master/media/'
+    response = requests.get(URL+url)
+    if response.status_code == 200:
+        return response.content
+        print('Изображение успешно сохранено.')
+    else:
+        print('Ошибка при загрузке изображения. Статус код:', response.status_code)
+
+
 @api_view(['POST'])
 def register_order(request):
-    cart = json.loads(request.body.decode())
-    
+    cart = request.data
     order = Order.objects.create(
         name=cart['firstname'],
         surname=cart['lastname'],
@@ -87,22 +97,11 @@ def register_order(request):
     return JsonResponse(cart)
 
 
-def get_pic(url):
-    import requests
-    URL = 'https://raw.githubusercontent.com/devmanorg/star-burger-products/master/media/'
-    response = requests.get(URL+url)
-    if response.status_code == 200:
-        return response.content
-        print('Изображение успешно сохранено.')
-    else:
-        print('Ошибка при загрузке изображения. Статус код:', response.status_code)
-
-
 @api_view(['POST'])
 def create_product(request):
     from django.core.files.base import ContentFile
     
-    products = json.loads(request.body.decode())
+    products = request.data
     for product in products:
         category, _ = ProductCategory.objects.get_or_create(name=product['type'])
         img = get_pic(product['img'])
@@ -118,7 +117,7 @@ def create_product(request):
 
 @api_view(['POST'])
 def create_restaurant(request):
-    restaurants = json.loads(request.body.decode())
+    restaurants = request.data
     for restaurant in restaurants:
         Restaurant.objects.get_or_create(
             name=restaurant['title'],
