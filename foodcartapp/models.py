@@ -39,12 +39,11 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
-        related_name='orders',
+        related_name='items',
         on_delete=models.CASCADE
     )
     product = models.ForeignKey(
         'Product',
-        related_name='items',
         on_delete=models.CASCADE)
     amount = models.IntegerField('количество')
 

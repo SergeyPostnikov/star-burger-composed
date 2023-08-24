@@ -82,7 +82,7 @@ def register_order(request):
         surname=cart['lastname'],
         contact_phone=cart['phonenumber'],
         address=cart['address']
-        )
+    )
     for product_info in cart['products']:
         product_id = product_info['product']
         amount = int(product_info['quantity'])
@@ -92,7 +92,7 @@ def register_order(request):
             amount=amount,
             order=order
         )
-    return JsonResponse({})
+    return JsonResponse({'message': 'Заказ успешно создан'})
 
 
 @api_view(['POST'])
