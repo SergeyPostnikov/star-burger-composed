@@ -1,41 +1,61 @@
 from rest_framework import serializers
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Product
+from pprint import pprint
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = '__all__'
-        extra_kwargs = {
-            'pk': {'source': 'product'},
-            'amount': {'source': 'quantity'}
-        }
+        fields = ['quantity', 'product']
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    # items = OrderItemSerializer(many=True)
-    # def save(self):
-    #     order = Order.objects.create(
-    #         name=self.validated_data['firstname'],
-    #         surname=self.validated_data['lastname'],
-    #         contact_phone=self.validated_data['phonenumber'],
-    #         address=self.validated_data['address']
-    #         )
-    #     print(order)
-        # for item in self.validated_data['products']:
+    products = OrderItemSerializer(many=True)
 
+    def save(self):
+        order = Order.objects.create(
+            firstname=self.validated_data['firstname'],
+            lastname=self.validated_data['lastname'],
+            phonenumber=self.validated_data['phonenumber'],
+            address=self.validated_data['address']
+            )
+
+        for item in self.validated_data['products']:
+            product = item['product']
+            amount = int(item['quantity'])
+            OrderItem.objects.create(
+                product=product,
+                quantity=amount,
+                order=order
+            )
+        return order
 
     class Meta:
         model = Order
-        # fields = ['name', 'surname', 'contact_phone', 'address',]
-        # fields = '__all__'
-        fields = ['name',]
+        fields = '__all__'
 
 
+data = {
+  "products": [
+    {
+      "product": 1,
+      "quantity": 1
+    },
+    {
+      "product": 2,
+      "quantity": 1
+    }
+  ],
+  "firstname": "Perer",
+  "lastname": "Swann",
+  "phonenumber": "+79046396540",
+  "address": "СПб Литейный 45"
+}
 
-        extra_kwargs = {
-            'firstname': {'source': 'name'},
-        #     'lastname': {'source': 'surname'},
-        #     'phonenumber': {'source': 'contact_phone'},
-        #     # 'products': {'source': 'items'}
-        }
+
+# serializer = OrderSerializer(data=data)
+# if serializer.is_valid():
+#     order = serializer.save()
+#     print('All ok!')
+# else:
+#     print(serializer.errors)

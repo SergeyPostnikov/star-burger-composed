@@ -4,18 +4,18 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Order(models.Model):
-    name = models.CharField(
+    firstname = models.CharField(
         'имя',
         max_length=50,
         null=False
     )
-    surname = models.CharField(
+    lastname = models.CharField(
         'фамилия',
         max_length=50,
         blank=True,
         null=False,
     )
-    contact_phone = PhoneNumberField(
+    phonenumber = PhoneNumberField(
         'контактный телефон',
         null=False,
         blank=False,
@@ -33,7 +33,7 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
-        return f'{self.name} {self.surname} {self.address}'
+        return f'{self.firstname} {self.lastname} {self.address}'
 
 
 class OrderItem(models.Model):
@@ -45,7 +45,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(
         'Product',
         on_delete=models.CASCADE)
-    amount = models.IntegerField('количество')
+    quantity = models.IntegerField('количество')
 
     class Meta:
         verbose_name = 'Элемент заказа'

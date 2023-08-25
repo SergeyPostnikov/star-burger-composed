@@ -8,6 +8,8 @@ from .models import OrderItem
 from .models import ProductCategory
 from .models import Restaurant
 
+from .serializers import OrderSerializer
+
 from rest_framework.decorators import api_view
 
 
@@ -76,23 +78,12 @@ def get_pic(url):
 
 @api_view(['POST'])
 def register_order(request):
-    cart = request.data
-    order = Order.objects.create(
-        name=cart['firstname'],
-        surname=cart['lastname'],
-        contact_phone=cart['phonenumber'],
-        address=cart['address']
-    )
-    for product_info in cart['products']:
-        product_id = product_info['product']
-        amount = int(product_info['quantity'])
-        product = Product.objects.get(pk=product_id)
-        OrderItem.objects.create(
-            product=product,
-            amount=amount,
-            order=order
-        )
-    return JsonResponse({'message': 'Заказ успешно создан'})
+    serialized_order = OrderSerializer(data=request.data)
+    if serialized_order.is_valid():
+        serialized_order.save()
+        return JsonResponse({'message': 'Заказ успешно создан'})
+    else:
+        return JsonResponse({'errors': serialized_order.errors})
 
 
 @api_view(['POST'])
