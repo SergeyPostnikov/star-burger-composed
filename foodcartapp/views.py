@@ -1,12 +1,10 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
-import json
+
+from rest_framework import status
+from rest_framework.response import Response
 
 from .models import Product
-from .models import Order
-from .models import OrderItem
-from .models import ProductCategory
-from .models import Restaurant
 
 from .serializers import OrderSerializer
 
@@ -65,52 +63,34 @@ def product_list_api(request):
     })
 
 
-def get_pic(url):
-    import requests
-    URL = 'https://raw.githubusercontent.com/devmanorg/star-burger-products/master/media/'
-    response = requests.get(URL+url)
-    if response.status_code == 200:
-        return response.content
-        print('Изображение успешно сохранено.')
-    else:
-        print('Ошибка при загрузке изображения. Статус код:', response.status_code)
-
-
 @api_view(['POST'])
 def register_order(request):
-    serialized_order = OrderSerializer(data=request.data)
+    data = request.data
+
+    if data.get('products') is None:
+        return Response(
+            {'error': 'products key not presented or null'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not isinstance(data['products'], list):
+        return Response(
+            {'error': 'products key is not list'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if not data['products']:
+        return Response(
+            {'error': 'products key cant be empty'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    serialized_order = OrderSerializer(data=data)
     if serialized_order.is_valid():
         serialized_order.save()
-        return JsonResponse({'message': 'Заказ успешно создан'})
-    else:
-        return JsonResponse({'errors': serialized_order.errors})
-
-
-@api_view(['POST'])
-def create_product(request):
-    from django.core.files.base import ContentFile
-    
-    products = request.data
-    for product in products:
-        category, _ = ProductCategory.objects.get_or_create(name=product['type'])
-        img = get_pic(product['img'])
-        Product.objects.get_or_create(
-            name=product['title'],
-            price=product['price'],
-            category=category,
-            description=product['description'],
-            image=ContentFile(img, name=product['img'])
-            )
-    return JsonResponse({'message': 'Продукты успешно созданы'})
-
-
-@api_view(['POST'])
-def create_restaurant(request):
-    restaurants = request.data
-    for restaurant in restaurants:
-        Restaurant.objects.get_or_create(
-            name=restaurant['title'],
-            address=restaurant['address'],
-            contact_phone=restaurant['contact_phone']
+        return Response(
+            {'message': 'Заказ успешно создан'},
+            status=status.HTTP_200_OK
         )
-    return JsonResponse({'message': 'Рестораны успешно созданы'})
+    else:
+        return Response({'errors': serialized_order.errors})
