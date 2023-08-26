@@ -75,13 +75,13 @@ def register_order(request):
 
     if not isinstance(data['products'], list):
         return Response(
-            {'error': 'products key is not list'}, 
+            {'error': 'Products key is not list'}, 
             status=status.HTTP_400_BAD_REQUEST
         )
 
     if not data['products']:
         return Response(
-            {'error': 'products key cant be empty'}, 
+            {'error': 'Products key cant be empty'}, 
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -89,8 +89,11 @@ def register_order(request):
     if serialized_order.is_valid():
         serialized_order.save()
         return Response(
-            {'message': 'Заказ успешно создан'},
+            {'message': 'Order succesfully created'},
             status=status.HTTP_200_OK
         )
     else:
-        return Response({'errors': serialized_order.errors})
+        return Response(
+            {'errors': serialized_order.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
