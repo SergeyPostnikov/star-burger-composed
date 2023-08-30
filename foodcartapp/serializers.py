@@ -17,7 +17,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = OrderItemSerializer(many=True)
+    products = OrderItemSerializer(many=True, write_only=True)
 
     def save(self):
         order = Order.objects.create(

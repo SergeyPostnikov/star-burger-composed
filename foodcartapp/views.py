@@ -70,7 +70,10 @@ def register_order(request):
     if serialized_order.is_valid(raise_exception=True):
         serialized_order.save()
         return Response(
-            {'message': 'Order succesfully created'},
+            {
+                'message': 'Order succesfully created',
+                'order': serialized_order.data
+            },
             status=status.HTTP_200_OK
         )
     else:
