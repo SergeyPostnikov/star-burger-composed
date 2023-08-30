@@ -7,12 +7,13 @@ class Order(models.Model):
     firstname = models.CharField(
         'имя',
         max_length=50,
+        blank=False,
         null=False
     )
     lastname = models.CharField(
         'фамилия',
         max_length=50,
-        blank=True,
+        blank=False,
         null=False,
     )
     phonenumber = PhoneNumberField(
@@ -44,8 +45,15 @@ class OrderItem(models.Model):
     )
     product = models.ForeignKey(
         'Product',
-        on_delete=models.CASCADE)
-    quantity = models.IntegerField('количество')
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False
+    )
+    quantity = models.IntegerField(
+        'количество',
+        blank=False,
+        null=False,
+        )
 
     class Meta:
         verbose_name = 'Элемент заказа'

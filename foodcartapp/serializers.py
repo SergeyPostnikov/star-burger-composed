@@ -1,11 +1,18 @@
 from rest_framework import serializers
+from rest_framework.serializers import ValidationError
 from .models import Order, OrderItem, Product
-from pprint import pprint
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['pk']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
+        product = ProductSerializer(many=True)
         fields = ['quantity', 'product']
 
 
@@ -18,7 +25,7 @@ class OrderSerializer(serializers.ModelSerializer):
             lastname=self.validated_data['lastname'],
             phonenumber=self.validated_data['phonenumber'],
             address=self.validated_data['address']
-            )
+        )
 
         for item in self.validated_data['products']:
             product = item['product']
@@ -29,33 +36,12 @@ class OrderSerializer(serializers.ModelSerializer):
                 order=order
             )
         return order
+    
+    def validate_products(self, value):
+        if not value:
+            raise ValidationError('Products key cant be empty')
+        return value
 
     class Meta:
         model = Order
         fields = '__all__'
-
-
-data = {
-  "products": [
-    {
-      "product": 1,
-      "quantity": 1
-    },
-    {
-      "product": 2,
-      "quantity": 1
-    }
-  ],
-  "firstname": "Perer",
-  "lastname": "Swann",
-  "phonenumber": "+79046396540",
-  "address": "СПб Литейный 45"
-}
-
-
-# serializer = OrderSerializer(data=data)
-# if serializer.is_valid():
-#     order = serializer.save()
-#     print('All ok!')
-# else:
-#     print(serializer.errors)

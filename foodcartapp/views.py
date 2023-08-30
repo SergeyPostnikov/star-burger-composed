@@ -66,27 +66,8 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     data = request.data
-
-    if data.get('products') is None:
-        return Response(
-            {'error': 'products key not presented or null'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    if not isinstance(data['products'], list):
-        return Response(
-            {'error': 'Products key is not list'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    if not data['products']:
-        return Response(
-            {'error': 'Products key cant be empty'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
     serialized_order = OrderSerializer(data=data)
-    if serialized_order.is_valid():
+    if serialized_order.is_valid(raise_exception=True):
         serialized_order.save()
         return Response(
             {'message': 'Order succesfully created'},
