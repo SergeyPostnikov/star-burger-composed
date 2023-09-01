@@ -1,9 +1,19 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
+from django.db.models import F, Sum, DecimalField
+
+
+class OrderQuerySet(models.QuerySet):
+    def annotate_total_sum(self):
+        return self.annotate(
+            total_price=Sum(F('items__quantity') * F('items__product__price'), 
+            output_field=DecimalField())
+        )
 
 
 class Order(models.Model):
+    objects = OrderQuerySet.as_manager()
     firstname = models.CharField(
         'имя',
         max_length=50,
