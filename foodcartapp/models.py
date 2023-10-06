@@ -38,14 +38,27 @@ class Order(models.Model):
         blank=False,
         null=False,
     )
-
+    total_price = models.DecimalField(
+        'общая сумма',
+        max_digits=8,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)]
+    )
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
         return f'{self.firstname} {self.lastname} {self.address}'
-
+    
+    #fixme
+    def calculate_total_price(self):
+        self.total_price = self.items.aggregate(
+            total_price=Sum(models.F('quantity') * models.F('product__price'))
+        )['total_price'] or 0
+        self.save(update_fields=['total_price'])
 
 class OrderItem(models.Model):
     order = models.ForeignKey(
