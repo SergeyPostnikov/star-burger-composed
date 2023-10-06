@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
@@ -65,6 +66,20 @@ class Order(models.Model):
         blank=True,
         null=True,
         validators=[MinValueValidator(0)]
+    )
+    registrated_at = models.DateTimeField(
+        'дата и время регистрации',
+        default=timezone.now
+    )
+    called_at = models.DateTimeField(
+        'дата и время созвона', 
+        blank=True,
+        null=True
+    )
+    delivered_at = models.DateTimeField(
+        'дата и время доставки',
+        blank=True, 
+        null=True
     )
     objects = OrderQuerySet.as_manager()
     class Meta:
