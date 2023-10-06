@@ -29,6 +29,11 @@ class Order(models.Model):
         default=Statuses.UNTREATED,
         db_index=True
     )
+    comment = models.TextField(
+        "комментарий", 
+        blank=True,
+        help_text='Необязательный комментарий к заказу'
+    )
     firstname = models.CharField(
         'имя',
         max_length=50,
