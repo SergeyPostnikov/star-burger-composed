@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F, Sum, DecimalField
+from django.utils.translation import gettext_lazy as _
 
 
 class OrderQuerySet(models.QuerySet):
@@ -13,7 +14,21 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
-    objects = OrderQuerySet.as_manager()
+    class Statuses(models.TextChoices):
+        UNTREATED = 'UN', _('Необработанный')
+        CANCELED = 'CA', _('Отмененный')
+        ACCEPTED = 'AC', _('Принятый')
+        PRODUCED = 'PR', _('Приготовленный')
+        SHIPPED = 'SH', _('Отгруженный')
+        COMPLETED = 'CO', _('Выполненный')
+
+    status = models.CharField(
+        'статус', 
+        max_length=2, 
+        choices=Statuses.choices,
+        default=Statuses.UNTREATED,
+        db_index=True
+    )
     firstname = models.CharField(
         'имя',
         max_length=50,
@@ -46,6 +61,7 @@ class Order(models.Model):
         null=True,
         validators=[MinValueValidator(0)]
     )
+    objects = OrderQuerySet.as_manager()
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
