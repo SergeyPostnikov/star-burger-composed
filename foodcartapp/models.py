@@ -23,6 +23,17 @@ class Order(models.Model):
         SHIPPED = 'SH', _('Отгруженный')
         COMPLETED = 'CO', _('Выполненный')
 
+    class PaymentMethods(models.TextChoices):
+        CARD = 'CARD', _('Картой')
+        CASH = 'CASH', _('Наличные')
+    
+    payment_method = models.CharField(
+        'метод оплаты', 
+        max_length=6,
+        choices=PaymentMethods.choices,
+        default=PaymentMethods.CARD,
+        db_index=True
+    )
     status = models.CharField(
         'статус', 
         max_length=2, 
