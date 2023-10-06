@@ -7,7 +7,7 @@ from django.db.models import F, Sum, DecimalField
 class OrderQuerySet(models.QuerySet):
     def annotate_total_sum(self):
         return self.annotate(
-            total_price=Sum(F('items__quantity') * F('items__product__price'), 
+            total_sum=Sum(F('items__quantity') * F('items__product__price'), 
             output_field=DecimalField())
         )
 
