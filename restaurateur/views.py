@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
+from django.db.models import Count, Exists, OuterRef
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, OrderItem
 
 
 class Login(forms.Form):
@@ -89,11 +90,21 @@ def view_restaurants(request):
         'restaurants': Restaurant.objects.all(),
     })
 
+def get_available_restaurants(order_id):
+    products_in_order = OrderItem.objects.filter(order_id=order_id).values_list('product_id', flat=True)
+    restaurants_with_all_products = Restaurant.objects.annotate(
+        num_products=Count('menu_items__product')
+    ).filter(num_products=len(products_in_order), menu_items__product__in=products_in_order).distinct()
+    return restaurants_with_all_products
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     order_items = Order.objects.exclude(status='CO').all()
+    order_items_with_restaurants = []
+    for item in order_items:
+        item.restaurants = get_available_restaurants(item.pk)
+        order_items_with_restaurants.append(item)
 
     return render(request, template_name='order_items.html', context={
-        'order_items': order_items
+        'order_items': order_items_with_restaurants
     })

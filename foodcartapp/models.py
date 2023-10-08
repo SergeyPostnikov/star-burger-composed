@@ -12,7 +12,22 @@ class OrderQuerySet(models.QuerySet):
             total_sum=Sum(F('items__quantity') * F('items__product__price'), 
             output_field=DecimalField())
         )
-
+    def annotate_restaurants(self):
+        '''
+        annotate orders, add restaurants whith intersection 
+        of order products and restoraunt available menu
+        '''
+        return self.annotate(
+            restaurants=Subquery(
+                Restaurant.objects.annotate(
+                    num_products=Count('menu_items__product')
+                ).filter(
+                    num_products=Count('orderitem__product'),
+                    menu_items__product__in=models.Subquery(OrderItem.objects.filter(order=models.OuterRef('pk')).values('product'))
+                ).values('id'),
+                output_field=models.BooleanField()
+            )
+        )
 
 class Order(models.Model):
     class Statuses(models.TextChoices):
@@ -78,6 +93,12 @@ class Order(models.Model):
         null=True,
         validators=[MinValueValidator(0)]
     )
+    cooking_by = models.ForeignKey(
+        'Restaurant',
+        verbose_name='готовится в',
+        null=True,
+        on_delete=models.SET_NULL
+        )
     registrated_at = models.DateTimeField(
         'дата и время регистрации',
         default=timezone.now
