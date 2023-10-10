@@ -91,10 +91,14 @@ def view_restaurants(request):
     })
 
 def get_available_restaurants(order_id):
-    products_in_order = OrderItem.objects.filter(order_id=order_id).values_list('product_id', flat=True)
-    restaurants_with_all_products = Restaurant.objects.annotate(
-        num_products=Count('menu_items__product')
-    ).filter(num_products=len(products_in_order), menu_items__product__in=products_in_order).distinct()
+    products_in_order = set(OrderItem.objects.filter(order_id=order_id).values_list('product_id', flat=True))
+    restaurants_with_all_products = []
+
+    restaurants = Restaurant.objects.all()
+    for restaurant in restaurants:
+        products_in_menu = set(restaurant.menu_items.values_list('product_id', flat=True))
+        if set.intersection(products_in_order, products_in_menu) == products_in_order:
+            restaurants_with_all_products.append(restaurant)
     return restaurants_with_all_products
 
 @user_passes_test(is_manager, login_url='restaurateur:login')

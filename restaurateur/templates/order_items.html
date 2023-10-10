@@ -27,20 +27,22 @@
         <td>{{item.phonenumber}}</td>
         <td>{{item.address}}</td>
         <td>{{item.comment}}</td>
-        <td>
-          {% if item.coocking_by %}
+        {% if item.cooking_by %}
+          <td>
             Готовится в {{ item.cooking_by }}
-          {% else %}
-            <details>
-              <summary>Рестораны</summary>
+          </td>
+        {% else %}
+          <td>
+            <details open>
+              <summary>Может быть приготовлен в</summary>
               <ul>
                 {% for restaurant in item.restaurants %}
                   <li>{{ restaurant.name }}</li>
                 {% endfor %}
               </ul>
             </details>
-          {% endif %}
-        </td>
+          </td>
+        {% endif %}
         <td><a href="{% url 'admin:foodcartapp_order_change' item.pk %}?next={% url 'restaurateur:view_orders'%}"><small>Редактировать</small></a></td>
       </tr>
     {% endfor %}

@@ -97,6 +97,7 @@ class Order(models.Model):
         'Restaurant',
         verbose_name='готовится в',
         null=True,
+        blank=True,
         on_delete=models.SET_NULL
         )
     registrated_at = models.DateTimeField(
