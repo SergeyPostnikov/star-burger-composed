@@ -1,6 +1,5 @@
-from django.contrib import admin
 from .models import AddressPoint
-# Register your models here.
+from django.contrib import admin
 
 
 @admin.register(AddressPoint)

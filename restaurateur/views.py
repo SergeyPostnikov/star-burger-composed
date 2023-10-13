@@ -1,17 +1,18 @@
 from django import forms
-from django.shortcuts import redirect, render
-from django.views import View
-from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views import View
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 from django.contrib.auth import views as auth_views
 
-from django.db.models import Count, Exists, OuterRef
-
-from foodcartapp.models import Product, Restaurant, Order, OrderItem
-from foodcartapp.utils import get_available_restaurants, fetch_coordinates
-from django.conf import settings
+from foodcartapp.models import Order
+from foodcartapp.models import Product
+from foodcartapp.models import Restaurant
+from foodcartapp.utils import get_available_restaurants
 
 
 class Login(forms.Form):
@@ -71,17 +72,18 @@ def view_products(request):
     restaurants = list(Restaurant.objects.order_by('name'))
     products = list(Product.objects.prefetch_related('menu_items'))
 
-    products_with_restaurant_availability = []
+    products_with_availability = []
     for product in products:
-        availability = {item.restaurant_id: item.availability for item in product.menu_items.all()}
+        menu_items = product.menu_items
+        availability = {item.restaurant_id: item.availability for item in menu_items}
         ordered_availability = [availability.get(restaurant.id, False) for restaurant in restaurants]
 
-        products_with_restaurant_availability.append(
+        products_with_availability.append(
             (product, ordered_availability)
         )
 
     return render(request, template_name="products_list.html", context={
-        'products_with_restaurant_availability': products_with_restaurant_availability,
+        'products_with_availability': products_with_availability,
         'restaurants': restaurants,
     })
 
@@ -95,7 +97,7 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    order_items = Order.objects.exclude(status='CO').all()
+    order_items = Order.objects.exclude(status='CO')
     order_items_with_restaurants = []
     for item in order_items:
         item.restaurants = get_available_restaurants(item.pk)

@@ -4,15 +4,14 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 
 from django.shortcuts import redirect
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.encoding import iri_to_uri
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from .models import Product
-from .models import ProductCategory
-from .models import Restaurant
-from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderItem
+from .models import Product
+from .models import Restaurant
+from .models import RestaurantMenuItem
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -96,14 +95,20 @@ class ProductAdmin(admin.ModelAdmin):
     def get_image_preview(self, obj):
         if not obj.image:
             return 'выберите картинку'
-        return format_html('<img src="{url}" style="max-height: 200px;"/>', url=obj.image.url)
+            html = '<img src="{url}" style="max-height: 200px;"/>'
+        return format_html(html, url=obj.image.url)
     get_image_preview.short_description = 'превью'
 
     def get_image_list_preview(self, obj):
         if not obj.image or not obj.id:
             return 'нет картинки'
         edit_url = reverse('admin:foodcartapp_product_change', args=(obj.id,))
-        return format_html('<a href="{edit_url}"><img src="{src}" style="max-height: 50px;"/></a>', edit_url=edit_url, src=obj.image.url)
+        html = '''
+            <a href="{edit_url}">
+                <img src="{src}" style="max-height: 50px;"/>
+            </a>
+        '''
+        return format_html(html, edit_url=edit_url, src=obj.image.url)
     get_image_list_preview.short_description = 'превью'
 
 

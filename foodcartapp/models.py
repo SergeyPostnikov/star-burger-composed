@@ -8,26 +8,11 @@ from django.utils.translation import gettext_lazy as _
 
 class OrderQuerySet(models.QuerySet):
     def annotate_total_sum(self):
-        return self.annotate(
-            total_sum=Sum(F('items__quantity') * F('items__product__price'), 
-            output_field=DecimalField())
+        total_sum = Sum(
+            F('items__quantity') * F('items__product__price')
         )
-    def annotate_restaurants(self):
-        '''
-        annotate orders, add restaurants whith intersection 
-        of order products and restoraunt available menu
-        '''
-        return self.annotate(
-            restaurants=Subquery(
-                Restaurant.objects.annotate(
-                    num_products=Count('menu_items__product')
-                ).filter(
-                    num_products=Count('orderitem__product'),
-                    menu_items__product__in=models.Subquery(OrderItem.objects.filter(order=models.OuterRef('pk')).values('product'))
-                ).values('id'),
-                output_field=models.BooleanField()
-            )
-        )
+        return self.annotate(total_sum=total_sum, output_field=DecimalField())
+
 
 class Order(models.Model):
     class Statuses(models.TextChoices):
@@ -41,23 +26,23 @@ class Order(models.Model):
     class PaymentMethods(models.TextChoices):
         CARD = 'CARD', _('Картой')
         CASH = 'CASH', _('Наличные')
-    
+
     payment_method = models.CharField(
-        'метод оплаты', 
+        'метод оплаты',
         max_length=6,
         choices=PaymentMethods.choices,
         default=PaymentMethods.CARD,
         db_index=True
     )
     status = models.CharField(
-        'статус', 
-        max_length=2, 
+        'статус',
+        max_length=2,
         choices=Statuses.choices,
         default=Statuses.UNTREATED,
         db_index=True
     )
     comment = models.TextField(
-        "комментарий", 
+        "комментарий",
         blank=True,
         help_text='Необязательный комментарий к заказу'
     )
@@ -99,35 +84,37 @@ class Order(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL
-        )
+    )
     registrated_at = models.DateTimeField(
         'дата и время регистрации',
         default=timezone.now
     )
     called_at = models.DateTimeField(
-        'дата и время созвона', 
+        'дата и время созвона',
         blank=True,
         null=True
     )
     delivered_at = models.DateTimeField(
         'дата и время доставки',
-        blank=True, 
+        blank=True,
         null=True
     )
     objects = OrderQuerySet.as_manager()
+
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
         return f'{self.firstname} {self.lastname} {self.address}'
-    
-    #fixme
+
+    # fixme
     def calculate_total_price(self):
         self.total_price = self.items.aggregate(
             total_price=Sum(models.F('quantity') * models.F('product__price'))
         )['total_price'] or 0
         self.save(update_fields=['total_price'])
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(
@@ -145,7 +132,7 @@ class OrderItem(models.Model):
         'количество',
         blank=False,
         null=False,
-        )
+    )
 
     class Meta:
         verbose_name = 'Элемент заказа'

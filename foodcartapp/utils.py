@@ -1,9 +1,12 @@
-from geopy import distance
 import requests
-from foodcartapp.models import Restaurant, Order, OrderItem
-from geocoder.models import AddressPoint
-from requests.exceptions import HTTPError
+
 from django.conf import settings
+from foodcartapp.models import Order
+from foodcartapp.models import OrderItem
+from foodcartapp.models import Restaurant
+from geocoder.models import AddressPoint
+from geopy import distance
+from requests.exceptions import HTTPError
 
 
 def fetch_coordinates(address):
