@@ -98,7 +98,7 @@ def view_orders(request):
     order_items = Order.objects.exclude(status='CO').all()
     order_items_with_restaurants = []
     for item in order_items:
-        item.restaurants = get_available_restaurants(settings.GEOCODER_KEY, item.pk)
+        item.restaurants = get_available_restaurants(item.pk)
         order_items_with_restaurants.append(item)
 
     return render(request, template_name='order_items.html', context={
