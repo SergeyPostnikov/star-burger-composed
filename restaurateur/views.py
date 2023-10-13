@@ -10,6 +10,8 @@ from django.contrib.auth import views as auth_views
 from django.db.models import Count, Exists, OuterRef
 
 from foodcartapp.models import Product, Restaurant, Order, OrderItem
+from foodcartapp.utils import get_available_restaurants, fetch_coordinates
+from django.conf import settings
 
 
 class Login(forms.Form):
@@ -90,23 +92,13 @@ def view_restaurants(request):
         'restaurants': Restaurant.objects.all(),
     })
 
-def get_available_restaurants(order_id):
-    products_in_order = set(OrderItem.objects.filter(order_id=order_id).values_list('product_id', flat=True))
-    restaurants_with_all_products = []
-
-    restaurants = Restaurant.objects.all()
-    for restaurant in restaurants:
-        products_in_menu = set(restaurant.menu_items.values_list('product_id', flat=True))
-        if set.intersection(products_in_order, products_in_menu) == products_in_order:
-            restaurants_with_all_products.append(restaurant)
-    return restaurants_with_all_products
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     order_items = Order.objects.exclude(status='CO').all()
     order_items_with_restaurants = []
     for item in order_items:
-        item.restaurants = get_available_restaurants(item.pk)
+        item.restaurants = get_available_restaurants(settings.GEOCODER_KEY, item.pk)
         order_items_with_restaurants.append(item)
 
     return render(request, template_name='order_items.html', context={
