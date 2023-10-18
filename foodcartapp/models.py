@@ -101,7 +101,6 @@ class Order(models.Model):
     def __str__(self):
         return f'{self.firstname} {self.lastname} {self.address}'
 
-    # fixme
     def calculate_total_price(self):
         self.total_price = self.items.aggregate(
             total_price=Sum(models.F('quantity') * models.F('product__price'))
@@ -132,7 +131,7 @@ class OrderItem(models.Model):
         verbose_name_plural = 'Элементы заказа'
 
     def __str__(self):
-        return 'товар'
+        return f'элемент заказа {self.product.name}'
 
 
 class Restaurant(models.Model):
