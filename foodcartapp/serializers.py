@@ -36,7 +36,6 @@ class OrderSerializer(serializers.ModelSerializer):
                     quantity=amount,
                     order=order
                 )
-            order.calculate_total_price()
             return order
 
     class Meta:

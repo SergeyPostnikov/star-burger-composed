@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 class OrderQuerySet(models.QuerySet):
     def annotate_total_sum(self):
         total_sum = Sum(
-            F('items__quantity') * F('items__product__price')
+            F('items__quantity') * F('items__price')
         )
         return self.annotate(total_sum=total_sum, output_field=DecimalField())
 
@@ -63,14 +63,7 @@ class Order(models.Model):
         'адрес',
         max_length=50,
     )
-    total_price = models.DecimalField(
-        'общая сумма',
-        max_digits=8,
-        decimal_places=2,
-        blank=True,
-        null=True,
-        validators=[MinValueValidator(0)]
-    )
+
     cooking_by = models.ForeignKey(
         'Restaurant',
         verbose_name='готовится в',
@@ -101,12 +94,6 @@ class Order(models.Model):
     def __str__(self):
         return f'{self.firstname} {self.lastname} {self.address}'
 
-    def calculate_total_price(self):
-        self.total_price = self.items.aggregate(
-            total_price=Sum(models.F('quantity') * models.F('product__price'))
-        )['total_price'] or 0
-        self.save(update_fields=['total_price'])
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(
@@ -125,6 +112,14 @@ class OrderItem(models.Model):
         null=False,
         validators=[MinValueValidator(1)]
     )
+    price = models.DecimalField(
+        'цена в момент заказа',
+        max_digits=8,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0)]
+    ) 
 
     class Meta:
         verbose_name = 'Элемент заказа'
