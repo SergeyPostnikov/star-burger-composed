@@ -67,17 +67,12 @@ def product_list_api(request):
 def register_order(request):
     data = request.data
     serialized_order = OrderSerializer(data=data)
-    if serialized_order.is_valid(raise_exception=True):
-        serialized_order.save()
-        return Response(
-            {
-                'message': 'Order succesfully created',
-                'order': serialized_order.data
-            },
-            status=status.HTTP_200_OK
-        )
-    else:
-        return Response(
-            {'errors': serialized_order.errors},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    serialized_order.is_valid(raise_exception=True)
+    serialized_order.save()
+    return Response(
+        {
+            'message': 'Order succesfully created',
+            'order': serialized_order.data
+        },
+        status=status.HTTP_200_OK
+    )
