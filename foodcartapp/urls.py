@@ -10,6 +10,3 @@ urlpatterns = [
     path('banners/', banners_list_api),
     path('order/', register_order, name='order')
 ]
-
-# from django.urls import reverse
-# print(reverse('register_order'))
