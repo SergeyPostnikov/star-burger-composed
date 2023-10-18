@@ -6,7 +6,7 @@ from foodcartapp.models import OrderItem
 from foodcartapp.models import Restaurant
 from geocoder.models import AddressPoint
 from geopy import distance
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 
 
 def fetch_coordinates(address):
@@ -24,6 +24,10 @@ def fetch_coordinates(address):
         most_relevant = found_places[0]
         lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
         return lat, lon
+    except RequestException:
+        return None
+    except (KeyError, ValueError):
+        return None
     except HTTPError:
         return None
 
