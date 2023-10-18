@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from django.shortcuts import redirect
 from django.utils.encoding import iri_to_uri
 from django.utils.http import url_has_allowed_host_and_scheme
-
+from django.conf import settings
 from .models import Order
 from .models import OrderItem
 from .models import Product
@@ -124,7 +124,10 @@ class OrderAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         res = super(OrderAdmin, self).response_change(request, obj)
         if "next" in request.GET:
-            if url_has_allowed_host_and_scheme(request.GET['next'], None):
+            if url_has_allowed_host_and_scheme(
+                request.GET['next'], 
+                allowed_hosts=settings.ALLOWED_HOSTS
+            ):
                 return redirect(iri_to_uri(request.GET['next']))
         else:
             return res
