@@ -11,7 +11,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = OrderItemSerializer(many=True, write_only=True)
+    products = OrderItemSerializer(
+        many=True, 
+        write_only=True,
+        allow_empty=False, 
+        source='items'
+    )
 
     def save(self):
         with transaction.atomic():
@@ -32,11 +37,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 )
             order.calculate_total_price()
             return order
-    
-    def validate_products(self, value):
-        if not value:
-            raise ValidationError('Products key cant be empty')
-        return value
 
     class Meta:
         model = Order
