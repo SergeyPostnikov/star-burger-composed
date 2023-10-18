@@ -3,17 +3,18 @@ from rest_framework.serializers import ValidationError
 from .models import Order, OrderItem, Product
 from django.db import transaction
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['pk']
+
+# class ProductSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Product
+#         fields = ['pk']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        product = ProductSerializer(many=True)
-        fields = ['quantity', 'product']
+        # product = ProductSerializer(many=True)
+        fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
