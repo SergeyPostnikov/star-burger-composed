@@ -1,20 +1,13 @@
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
-from .models import Order, OrderItem, Product
+from .models import Order, OrderItem
 from django.db import transaction
-
-
-# class ProductSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Product
-#         fields = ['pk']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        # product = ProductSerializer(many=True)
-        fields = '__all__'
+        fields = ['order', 'product', 'quantity']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -47,4 +40,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = [
+            'firstname',
+            'lastname',
+            'phonenumber',
+            'address',
+            'products'
+        ]
