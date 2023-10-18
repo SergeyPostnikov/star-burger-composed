@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from rest_framework.serializers import ValidationError
 from .models import Order, OrderItem
 from django.db import transaction
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ['order', 'product', 'quantity']
+        fields = ['product', 'quantity']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -17,6 +17,7 @@ class OrderSerializer(serializers.ModelSerializer):
         allow_empty=False, 
         source='items'
     )
+    phonenumber = PhoneNumberField(region="RU")
 
     def save(self):
         with transaction.atomic():
@@ -27,7 +28,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 address=self.validated_data['address']
             )
 
-            for item in self.validated_data['products']:
+            for item in self.validated_data['items']:
                 product = item['product']
                 amount = int(item['quantity'])
                 OrderItem.objects.create(
