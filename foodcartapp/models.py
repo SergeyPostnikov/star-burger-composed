@@ -31,8 +31,6 @@ class Order(models.Model):
         'метод оплаты',
         max_length=6,
         choices=PaymentMethods.choices,
-        blank=False,
-        null=False,
         db_index=True
     )
     status = models.CharField(
@@ -49,15 +47,11 @@ class Order(models.Model):
     )
     firstname = models.CharField(
         'имя',
-        max_length=50,
-        blank=False,
-        null=False
+        max_length=50
     )
     lastname = models.CharField(
         'фамилия',
         max_length=50,
-        blank=False,
-        null=False,
     )
     phonenumber = PhoneNumberField(
         'контактный телефон',
@@ -68,8 +62,6 @@ class Order(models.Model):
     address = models.CharField(
         'адрес',
         max_length=50,
-        blank=False,
-        null=False,
     )
     total_price = models.DecimalField(
         'общая сумма',
@@ -131,7 +123,6 @@ class OrderItem(models.Model):
     )
     quantity = models.IntegerField(
         'количество',
-        blank=False,
         null=False,
     )
 
