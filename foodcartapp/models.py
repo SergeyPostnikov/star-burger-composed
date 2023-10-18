@@ -31,7 +31,8 @@ class Order(models.Model):
         'метод оплаты',
         max_length=6,
         choices=PaymentMethods.choices,
-        default=PaymentMethods.CARD,
+        blank=False,
+        null=False,
         db_index=True
     )
     status = models.CharField(
