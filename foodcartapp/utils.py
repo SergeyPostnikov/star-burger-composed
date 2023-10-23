@@ -24,13 +24,9 @@ def fetch_coordinates(address):
         most_relevant = found_places[0]
         lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
         return lat, lon
-    except RequestException:
+    except (HTTPError, KeyError, ValueError, RequestException):
         return None
-    except (KeyError, ValueError):
-        return None
-    except HTTPError:
-        return None
-
+        
 
 def get_address_point(address: str) -> tuple[float, float]:
     address_point, created = AddressPoint.objects.get_or_create(
