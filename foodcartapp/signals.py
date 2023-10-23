@@ -1,9 +1,8 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from .models import OrderItem
 
 
-@receiver(post_save, sender=OrderItem)
-def your_signal_handler(sender, instance, created, **kwargs):
-    if created:
-        instance.price = instance.product.price
+@receiver(pre_save, sender=OrderItem)
+def set_price(sender, instance, **kwargs):
+    instance.price = instance.product.price

@@ -116,8 +116,6 @@ class OrderItem(models.Model):
         'цена в момент заказа',
         max_digits=8,
         decimal_places=2,
-        blank=True,
-        null=True,
         validators=[MinValueValidator(0)]
     ) 
 
