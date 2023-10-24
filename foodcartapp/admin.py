@@ -95,7 +95,7 @@ class ProductAdmin(admin.ModelAdmin):
     def get_image_preview(self, obj):
         if not obj.image:
             return 'выберите картинку'
-            html = '<img src="{url}" style="max-height: 200px;"/>'
+        html = '<img src="{url}" style="max-height: 200px;"/>'
         return format_html(html, url=obj.image.url)
     get_image_preview.short_description = 'превью'
 
