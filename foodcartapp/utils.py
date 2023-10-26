@@ -28,7 +28,7 @@ def fetch_coordinates(address):
         return None
         
 
-def get_address_point(address: str) -> tuple[float, float]:
+def get_address_point(address):
     address_point, created = AddressPoint.objects.get_or_create(
         address=address
     )
