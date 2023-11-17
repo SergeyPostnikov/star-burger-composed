@@ -23,7 +23,7 @@ echo -e "${PURPLE}Installing js packages${RESET}"
 npm ci --dev
 
 echo -e "${PURPLE}Parcel build bundles${RESET}"
-./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url="./" &
+./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"     
 
 echo -e "${PURPLE}Reload star-burger daemon${RESET}"
 systemctl restart star-burger
