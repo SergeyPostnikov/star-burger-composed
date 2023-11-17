@@ -152,7 +152,7 @@ source deploy.sh
 - `DEBUG` — дебаг-режим. Поставьте `False`.
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `ROLLBAR_KEY` — [ключ см. документацию Rollbar](https://rollbar.com)
+- `ROLLBAR_KEY` — опционально [ключ см. документацию Rollbar](https://rollbar.com)
 - `GEOCODER_KEY` — [ключ см. документацию Яндекс Геокодера](https://geocode-maps.yandex.ru)
 
 - `DB_USER` — postgres user
