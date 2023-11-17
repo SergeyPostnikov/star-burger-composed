@@ -14,7 +14,7 @@ echo -e "${PURPLE}Pulling changes${RESET}"
 git pull
 
 echo -e "${PURPLE}Apply migrations${RESET}"
-/opt/star-burger/env/bin/python manage.py migrate
+/opt/star-burger/env/bin/python manage.py migrate --noinput
 
 echo -e "${PURPLE}Collect static${RESET}"
 /opt/star-burger/env/bin/python manage.py collectstatic --noinput --clear
