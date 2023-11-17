@@ -155,9 +155,7 @@ source deploy.sh
 - `ROLLBAR_KEY` — опционально [ключ см. документацию Rollbar](https://rollbar.com)
 - `GEOCODER_KEY` — [ключ см. документацию Яндекс Геокодера](https://geocode-maps.yandex.ru)
 
-- `DB_USER` — postgres user
-- `DB_NAME` — postgres database
-- `DB_PASSWORD` — postgres password
+- `DATABASE_URL` — опционально - по дефолту будет sqlite, иначе [смотри здесь](https://pypi.org/project/dj-database-url/)
 
 
 
