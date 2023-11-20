@@ -134,7 +134,6 @@ INTERNAL_IPS = [
 ROLLBAR_KEY = env('ROLLBAR_KEY', None)
 
 if ROLLBAR_KEY:
-    print('Rollbar is enabled')
     ROLLBAR = {
         'access_token': ROLLBAR_KEY,
         'environment': ENVIRONMENT,
@@ -142,8 +141,6 @@ if ROLLBAR_KEY:
         'root': BASE_DIR,
     }
     MIDDLEWARE.append('rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404')
-else:
-    print('Rollbar is dead')
 
 
 STATICFILES_DIRS = [
