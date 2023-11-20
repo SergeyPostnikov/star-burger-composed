@@ -15,4 +15,4 @@ RUN mkdir /star-burger/bundles/
 RUN python3 manage.py collectstatic --noinput --clear
 RUN python3 manage.py migrate --noinput
 
-CMD ["gunicorn" "star_burger.wsgi:application" "--bind" "0.0.0.0:8000"]
+CMD ["python3", "-m",  "gunicorn", "star_burger.wsgi:application", "--bind", "0.0.0.0:8000"]
