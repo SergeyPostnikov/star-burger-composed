@@ -15,6 +15,9 @@ services:
 
   django:
     build: ./backend
+    restart: always
+    environment:
+      - TZ=Europe/Moscow 
     ports:
       - 8000:8000
     depends_on:
@@ -22,6 +25,8 @@ services:
     volumes:
           - static_volume:/star-burger/staticfiles
           - media_volume:/star-burger/media
+    env_file:
+      - ./.env
 
   node:
     build: ./frontend
