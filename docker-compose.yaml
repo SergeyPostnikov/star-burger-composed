@@ -1,0 +1,43 @@
+version: "3"
+
+volumes:
+  db_data:
+  static_volume:
+  media_volume:
+
+services:
+  postgresql:
+    image: postgres:12.0-alpine
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+
+  django:
+    build: ./backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - node
+    volumes:
+          - static_volume:/star-burger/staticfiles
+          - media_volume:/star-burger/media
+
+  node:
+    build: ./frontend
+    volumes:
+      - static_volume:/star-burger/bundles
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.env
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    volumes:
+      - static_volume:/opt/static
+      - media_volume:/opt/media
+    depends_on:
+      - django
