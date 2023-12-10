@@ -13,7 +13,7 @@ services:
     env_file:
       - ./.env
 
-  django:
+  star_burger:
     build: ./backend
     restart: always
     environment:
@@ -25,6 +25,7 @@ services:
     volumes:
           - static_volume:/star-burger/staticfiles
           - media_volume:/star-burger/media
+    command: bash -c "python3 manage.py collectstatic --noinput --clear && python3 -m gunicorn star_burger.wsgi:application --bind 0.0.0.0:8000"
     env_file:
       - ./.env
 
@@ -34,15 +35,15 @@ services:
       - static_volume:/star-burger/bundles
     ports:
       - 8080:8080
-    env_file:
-      - ./.env
+    command: bash -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url='./' &"
 
   nginx:
     build: ./nginx
     ports:
-      - 1337:80
+      - "80:80"
     volumes:
       - static_volume:/opt/static
       - media_volume:/opt/media
     depends_on:
-      - django
+      - star_burger
+      - node
