@@ -2,6 +2,7 @@ FROM python:3.8.10
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
+ENV SECRET_KEY=12356jfcm.x/xS 
 
 WORKDIR /star-burger/
 
@@ -12,3 +13,4 @@ COPY . /star-burger/
 
 RUN mkdir /star-burger/bundles/
 RUN python3 manage.py migrate --noinput
+RUN python3 manage.py collectstatic --noinput --clear

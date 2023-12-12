@@ -27,7 +27,7 @@ services:
     volumes:
           - static_volume:/star-burger/staticfiles
           - media_volume:/star-burger/media
-    command: bash -c "python3 manage.py collectstatic --noinput --clear && python3 -m gunicorn star_burger.wsgi:application --bind 0.0.0.0:8000"
+    command: bash -c "python3 -m gunicorn star_burger.wsgi:application --bind 0.0.0.0:8000"
     env_file:
       - .env
 
