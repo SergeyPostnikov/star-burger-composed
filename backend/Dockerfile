@@ -12,5 +12,3 @@ RUN pip3 install -r requirements.txt
 COPY . /star-burger/
 
 RUN mkdir /star-burger/bundles/
-RUN python3 manage.py migrate --noinput
-RUN python3 manage.py collectstatic --noinput --clear

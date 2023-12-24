@@ -145,3 +145,5 @@ cython_debug/
 .parcel-cache/
 reload.sh
 /staticfiles/
+d-cor.yaml
+static/
