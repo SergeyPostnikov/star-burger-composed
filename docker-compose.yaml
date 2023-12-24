@@ -39,5 +39,5 @@ services:
     restart: always
     ports:
       - 8080:8080
-     command: bash -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url='./'"
+    command: bash -c "./node_modules/.bin/parcel watch bundles-src/index.js --dist-dir bundles --public-url='./'"
   
